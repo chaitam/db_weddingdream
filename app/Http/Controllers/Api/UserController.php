@@ -23,9 +23,9 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required',
             'name' => 'required',
             'username' => 'required',
+            'email' => 'required',
             'password' => 'required',
             'role' => 'required'
 
@@ -38,8 +38,8 @@ class UserController extends Controller
         $user = User::create([
             // 'id' => $request->id_user,
             // 'id_user' => $request->id_user,
-            'email' => $request->email,
             'name' => $request->name,
+            'email' => $request->email,
             'username' => $request->username,
             'password' => $request->password,
             'role' => $request->role

@@ -25,7 +25,7 @@ Route::apiResource('customers', App\Http\Controllers\Api\CustomerController::cla
 
 Route::apiResource('users', App\Http\Controllers\Api\UserController::class);
 Route::post('/users/create', [UserController::class, 'store']);
-Route::get("/users/get/$email", [UserController::class, 'show']);
+Route::get("/users/get/{email}", [UserController::class, 'show']);
 Route::apiResource('vendors', App\Http\Controllers\Api\VendorController::class);
 
 Route::apiResource('konsultans', App\Http\Controllers\Api\KonsultanController::class);
