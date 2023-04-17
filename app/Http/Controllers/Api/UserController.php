@@ -17,7 +17,7 @@ class UserController extends Controller
         $users = User::latest()->paginate(10);
 
         //return collection of users$users as a resource
-        return new UserResource(true, 'List Data Users', $users);
+        return response()->json($users, 200);
     }
 
     public function store(Request $request)
@@ -116,7 +116,7 @@ class UserController extends Controller
             'role' => $request->role
         ]);
 
-        return new UserResource(true, 'Data User Berhasil Diubah!', $user);
+        return response()->json($user, 200);
     }
 
     public function destroy(User $user)
