@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -22,54 +23,97 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'username'=>'required',
-            'email'=>'required',
-            'password'=>'required',
-            'role'=>'required'
-            
+            'email' => 'required',
+            'name' => 'required',
+            'username' => 'required',
+            'password' => 'required',
+            'role' => 'required'
+
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $user =User::create([
-            'id_user'=>$request->id_user,
-            'username'=>$request->username,
-            'email'=>$request->email,
-            'password'=>$request->password,
-            'role'=>$request->role
+
+        $user = User::create([
+            // 'id' => $request->id_user,
+            // 'id_user' => $request->id_user,
+            'email' => $request->email,
+            'name' => $request->name,
+            'username' => $request->username,
+            'password' => $request->password,
+            'role' => $request->role
+            // 'bidang' => $request->bidang,
+            // 'image' => $request->image,
         ]);
 
-        return new UserResource(true, 'Data User Berhasil Ditambahkan!', $user);
+        return response()->json([
+
+            "data" => $user,
+        ], 200,);
+
+        // return response($response, 200);
+
+
+        // UserResource(true, 'Data User Berhasil Ditambahkan!', $user);
+
     }
 
-    public function show($id)
+    public function show($email)
     {
-        $user = User::find($id);
+        $user = User::where('email', $email)->first();
         if (is_null($user)) {
-            return response()->json('Data not found', 404); 
+            return response()->json('Data not found', 404);
         }
-        return new UserResource(true, 'Data User Ditemukan!', $user);
+        return response()->json([
+            "data" => $user
+        ], 200,);
+    }
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+        if ($validator->fails()) {
+            return response(['errors' => $validator->errors()->all()], 422);
+        }
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+            if (Hash::check($request->password, $user->password)) {
+                $token = $user->createToken('Laravel Password Grant Client')->accessToken;
+                $response = ['token' => $token];
+                return response($response, 200);
+            } else {
+                $response = ["message" => "Password mismatch"];
+                return response($response, 422);
+            }
+        } else {
+            $response = ["message" => 'User does not exist'];
+            return response($response, 422);
+        }
     }
 
     public function update(Request $request, User $user)
     {
         $validator = Validator::make($request->all(), [
-            'username'=>'required',
-            'email'=>'required',
-            'password'=>'required',
-            'role'=>'required'
-            
+            'email' => 'required',
+            'name' => 'required',
+            'username' => 'required',
+            'password' => 'required',
+            'role' => 'required'
+
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
         $user->User::update([
-            'username'=>$request->username,
-            'email'=>$request->email,
-            'password'=>$request->password,
-            'role'=>$request->role
+            'email' => $request->email,
+            'username' => $request->username,
+            'name' => $request->name,
+            'password' => $request->password,
+            'role' => $request->role
         ]);
 
         return new UserResource(true, 'Data User Berhasil Diubah!', $user);
