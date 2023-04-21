@@ -23,10 +23,11 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'email' => 'required',
             'name' => 'required',
             'username' => 'required',
-            'email' => 'required',
             'password' => 'required',
+            'phone' => 'required',
             'role' => 'required'
 
         ]);
@@ -38,10 +39,11 @@ class UserController extends Controller
         $user = User::create([
             // 'id' => $request->id_user,
             // 'id_user' => $request->id_user,
-            'name' => $request->name,
             'email' => $request->email,
+            'name' => $request->name,
             'username' => $request->username,
             'password' => $request->password,
+            'phone' => $request->phone,
             'role' => $request->role
             // 'bidang' => $request->bidang,
             // 'image' => $request->image,
@@ -101,6 +103,7 @@ class UserController extends Controller
             'name' => 'required',
             'username' => 'required',
             'password' => 'required',
+            'phone' => 'required',
             'role' => 'required'
 
         ]);
@@ -110,9 +113,10 @@ class UserController extends Controller
 
         $user->User::update([
             'email' => $request->email,
-            'username' => $request->username,
             'name' => $request->name,
+            'username' => $request->username,
             'password' => $request->password,
+            'phone' => $request->phone,
             'role' => $request->role
         ]);
 
