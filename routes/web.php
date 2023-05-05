@@ -23,7 +23,7 @@ Route::get('/', function () {
 
 Route::apiResource('customers', App\Http\Controllers\Api\CustomerController::class);
 
-Route::apiResource('users', App\Http\Controllers\Api\UserController::class);
+// Route::apiResource('users', App\Http\Controllers\Api\UserController::class);
 
 Route::apiResource('vendors', App\Http\Controllers\Api\VendorController::class);
 

@@ -23,8 +23,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('customers', App\Http\Controllers\Api\CustomerController::class);
 
-Route::apiResource('users', App\Http\Controllers\Api\UserController::class);
+// Route::apiResource('users', App\Http\Controllers\Api\UserController::class);
 Route::post("/users/create", [UserController::class, 'store']);
+Route::post("/users/login", [UserController::class, 'login']);
+Route::put("/users/{id}", [UserController::class, 'update']);
 Route::get("/users/get/{email}", [UserController::class, 'show']);
 Route::apiResource('vendors', App\Http\Controllers\Api\VendorController::class);
 
