@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ProdukController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
@@ -34,7 +34,12 @@ Route::apiResource('konsultans', App\Http\Controllers\Api\KonsultanController::c
 
 Route::apiResource('talents', App\Http\Controllers\Api\TalentController::class);
 
-Route::apiResource('produks', App\Http\Controllers\Api\ProdukController::class);
+// Route::apiResource('produks', App\Http\Controllers\Api\ProdukController::class);
+Route::post("/produks/create", [ProdukController::class, 'store']);
+Route::put("/produks/{id}", [ProdukController::class, 'update']);
+Route::get("/produks/get/{id}", [ProdukController::class, 'show']);
+Route::get("/produks", [ProdukController::class, 'index']);
+Route::delete("/produks/{id}", [ProdukController::class, 'destroy']);
 
 
 // Route::get('/customers', CustomerController::class);
