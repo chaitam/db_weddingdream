@@ -17,9 +17,9 @@ return new class extends Migration
             $table->integer('harga');
             $table->string('nama_produk', 255);
             $table->string('desc_produk', 255);
-            $table->string('foto_produk', 255);
-            $table->integer('rating');
-            $table->string('ulasan', 255);
+            $table->string('foto_produk', 255)->nullable(true);;
+            $table->integer('rating')->nullable(true);
+            $table->string('ulasan', 255)->nullable(true);
             $table->timestamps();
         });
     }

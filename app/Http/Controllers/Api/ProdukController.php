@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ProdukResource;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -22,9 +21,9 @@ class ProdukController extends Controller
     public function myIndex($vendor_id)
     {
         //get posts
-        $produks = Produk::where($vendor_id, "vendor_id")::latest()->paginate(10);
-        if(is_null($produks)) {
-            return response()->json("Data kosong!",402);
+        $produks = Produk::where("vendor_id", $vendor_id)->latest()->paginate(10);
+        if (is_null($produks)) {
+            return response()->json("Data kosong!", 402);
         }
 
 
@@ -40,7 +39,7 @@ class ProdukController extends Controller
             'harga' => 'required',
             'nama_produk' => 'required',
             'desc_produk' => 'required',
-            'foto_produk' => 'required',
+            // 'foto_produk' => 'required',
             // 'rating'=>'required',
             // 'ulasan'=>'required',
 
@@ -81,7 +80,7 @@ class ProdukController extends Controller
             'harga' => 'required',
             'nama_produk' => 'required',
             'desc_produk' => 'required',
-            'foto_produk' => 'required',
+            // 'foto_produk' => 'required',
             // 'rating'=>'required',
             // 'ulasan'=>'required',
 
@@ -94,16 +93,12 @@ class ProdukController extends Controller
         if (is_null($produk)) {
             return response()->json('Data tidak ditemukan', 404);
         }
-        $produk::update([
-            'vendor_id' => $request->vendor_id,
-            'harga' => $request->harga,
-            'nama_produk' => $request->nama_produk,
-            'desc_produk' => $request->desc_produk,
-            'foto_produk' => $request->foto_produk,
-            // 'rating'=>$request->rating,
-            // 'ulasan'=>$request->ulasan,
-        ]);
-        // return new ProdukResource(true, 'Data Produk Berhasil Diubah!', $produk);
+        $produk->vendor_id = $request->vendor_id;
+        $produk->harga = $request->harga;
+        $produk->nama_produk = $request->nama_produk;
+        $produk->desc_produk = $request->desc_produk;
+        $produk->foto_produk = $request->foto_produk;
+        $produk->save();
         return response()->json($produk, 200);
     }
 
@@ -111,7 +106,7 @@ class ProdukController extends Controller
     {
         $produk = Produk::find($id);
         if (!is_null($produk)) {
-            return $produk->delete();
+            $produk->delete();
         }
         // return new ProdukResource(true, 'Data Produk Berhasil Dihapus!', null);
         return response()->json("Berhasil menghapus data", 200);

@@ -87,7 +87,7 @@ class VendorController extends Controller
         $vendor = Vendor::where($user_id, "user_id")->first();
 
         if (is_null($vendor)) {
-            return response()->json("Data tidak ditemukan!");
+            return response()->json("Data tidak ditemukan!", 404);
         }
         $vendor->no_hp = $request->no_hp;
         $vendor->alamat = $request->alamat;
@@ -103,9 +103,13 @@ class VendorController extends Controller
         return $vendor;
     }
 
-    public function destroy(Vendor $vendor)
+    public function destroy($id)
     {
-        $vendor->delete();
+        $vendor = Vendor::find($id);
+        if (!is_null($vendor)) {
+            // return response()->json("Data gagal di hapus!", 422);
+            $vendor->delete();
+        }
         // return new VendorResource(true, 'Data Vendor Berhasil Dihapus!', null);
         return response()->json('Data Vendor Berhasil Dihapus!', 200);
     }

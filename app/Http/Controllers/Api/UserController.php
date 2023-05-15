@@ -80,10 +80,10 @@ class UserController extends Controller
     {
         $user = User::find($id);
         if (is_null($user)) {
-            return response()->json('Data not found', 404);
+            return response()->json('Data tidak ditemukan!', 404);
         }
         if ($user->role = "vendor") {
-            $vendor = Vendor::where($user->id, "user_id")->first();
+            $vendor = Vendor::where("user_id", $user->id)->first();
             if (!is_null($vendor)) {
                 $user = array_merge(
                     $user->toArray(),
@@ -97,7 +97,6 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255',
-            // 'password' => 'required|string|min:6|confirmed',
             'password' => 'required|string|min:6',
         ]);
         if ($validator->fails()) {
@@ -110,24 +109,26 @@ class UserController extends Controller
             return response($response, 422);
         } else {
             if ($user->role = 'vendor') {
-                $vendor = Vendor::where($user->id, "user_id")->first();
-                if ($vendor) {
+                $vendor = Vendor::where("user_id", $user->id)->first();
+
+                if (!is_null($vendor)) {
                     $user = array_merge(
                         $user->toArray(),
                         $vendor->toArray(),
+                        // ['token'=> null]
                     );
                 }
             }
-            if (Hash::check($request->password, $user->password)) {
-                $token = $user->createToken('Laravel Password Grant Client')->accessToken;
+            if (Hash::check($request->password, $user['password'])) {
+                // $token = $user['token']->createToken('Laravel Password Grant Client')->accessToken;
                 $user = array_merge(
-                    $user->toArray(),
+                    $user,
                     $vendor->toArray(),
-                    ["token" => $token]
+                    // ["token" => $token]
                 );
                 return response($user, 200);
             } else {
-                $response = ["message" => "Password mismatch"];
+                $response = ["message" => "Password salah!"];
                 return response($response, 422);
             }
         }
@@ -146,6 +147,7 @@ class UserController extends Controller
             return response()->json($validator->errors(), 422);
         }
         $user = User::find($id);
+
 
         if (is_null($user)) {
             return response()->json("Data tidak ditemukan!", 200);
