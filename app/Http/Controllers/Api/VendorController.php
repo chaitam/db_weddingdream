@@ -22,6 +22,7 @@ class VendorController extends Controller
 
     static public function store(Request $request, $user_id)
     {
+
         $validator = Validator::make($request->all(), [
             'no_hp' => 'required',
             'alamat' => 'required',
@@ -29,41 +30,42 @@ class VendorController extends Controller
             'desc_vendor' => 'required',
             'range_harga' => 'required',
             'kontak_vendor' => 'required',
-            // 'galeri_vendor' => 'required',
-            // 'fotoprofile' => 'required'
+            'fotoprofile' => 'file|image|mimes:jpeg,png,jpg'
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return null;
+        }
+        if (!is_null($request->fotoprofile)) {
+            $file = $request->file('fotoprofile');
+            $file_name = time() . "_" . $file->getClientOriginalName();
+            $destination = 'fotoprofile';
+            $file->move($destination, $file_name);
         }
 
-        $vendor = Vendor::create([
-            'user_id' => $user_id,
-            'no_hp' => $request->no_hp,
-            'alamat' => $request->alamat,
-            'nama_vendor' => $request->nama_vendor,
-            'desc_vendor' => $request->desc_vendor,
-            'range_harga' => $request->range_harga,
-            'kontak_vendor' => $request->kontak_vendor,
-            'galeri_vendor' => $request->galeri_vendor,
-            'rating_vendor' => 0,
-            'fotoprofile' => $request->fotoprofile
-        ]);
+        $vendor = new Vendor();
 
-        // return new VendorResource(true, 'Data Vendor Berhasil Ditambahkan!', $vendor);
+        $vendor->user_id = $user_id;
+        $vendor->no_hp = $request->no_hp;
+        $vendor->alamat = $request->alamat;
+        $vendor->nama_vendor = $request->nama_vendor;
+        $vendor->desc_vendor = $request->desc_vendor;
+        $vendor->range_harga = $request->range_harga;
+        $vendor->kontak_vendor = $request->kontak_vendor;
+        // $vendor->galeri_vendor = $request->galeri_vendor;
+        $vendor->rating_vendor = 0;
+        if (!is_null($request->fotoprofile)) $vendor->fotoprofile = $file_name;
+
+        $vendor->save();
+
         return $vendor;
     }
 
     static public function show($user_id)
     {
         $vendor = Vendor::where("user_id", $user_id)->first();
-        // if (is_null($vendor)) {
-        //     return response()->json('Data not found', 404);
-        // }
         if (is_null($vendor)) {
             return null;
         }
-        // return new VendorResource(true, 'Data Vendor Ditemukan!', $vendor);
-        // return response()->json($vendor, 200);
         return $vendor;
     }
 
@@ -82,12 +84,12 @@ class VendorController extends Controller
 
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return null;
         }
         $vendor = Vendor::where($user_id, "user_id")->first();
 
         if (is_null($vendor)) {
-            return response()->json("Data tidak ditemukan!", 404);
+            return null;
         }
         $vendor->no_hp = $request->no_hp;
         $vendor->alamat = $request->alamat;

@@ -36,28 +36,41 @@ class ProdukController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'vendor_id' => 'required',
-            'harga' => 'required',
+            'harga' => 'required|integer',
             'nama_produk' => 'required',
             'desc_produk' => 'required',
+            'foto_produk' => 'required|file|image|mimes:jpeg,png,jpg',
             // 'foto_produk' => 'required',
             // 'rating'=>'required',
             // 'ulasan'=>'required',
 
         ]);
+
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
+        $file = $request->file('foto_produk');
+        $file_name = time() . "_" . $file->getClientOriginalName();
+        $destination = 'fotoproduk';
+        $file->move($destination, $file_name);
 
-        $produk = Produk::create([
-            // 'id_produk' => $request->id_produk,
-            'vendor_id' => $request->vendor_id,
-            'harga' => $request->harga,
-            'nama_produk' => $request->nama_produk,
-            'desc_produk' => $request->desc_produk,
-            'foto_produk' => $request->foto_produk,
-            // 'rating'=>$request->rating,
-            // 'ulasan'=>$request->ulasan,
-        ]);
+        $produk = new Produk();
+        $produk->vendor_id = $request->vendor_id;
+        $produk->harga = $request->harga;
+        $produk->nama_produk = $request->nama_produk;
+        $produk->desc_produk = $request->desc_produk;
+        $produk->foto_produk = $destination . "/" . $file_name;
+        $produk->save();
+        // $produk = Produk::create([
+        //     // 'id_produk' => $request->id_produk,
+        //     'vendor_id' => $request->vendor_id,
+        //     'harga' => $request->harga,
+        //     'nama_produk' => $request->nama_produk,
+        //     'desc_produk' => $request->desc_produk,
+        //     'foto_produk' => $file_name,
+        //     // 'rating'=>$request->rating,
+        //     // 'ulasan'=>$request->ulasan,
+        // ]);
 
         // return new ProdukResource(true, 'Data Produk Berhasil Ditambahkan!', $produk);
         return response()->json($produk, 200);
@@ -80,16 +93,23 @@ class ProdukController extends Controller
             'harga' => 'required',
             'nama_produk' => 'required',
             'desc_produk' => 'required',
-            // 'foto_produk' => 'required',
+            'foto_produk' => 'required|file|image|mimes:jpeg,png,jpg',
             // 'rating'=>'required',
             // 'ulasan'=>'required',
 
         ]);
+
+
+        $file = $request->file('foto_produk');
+
+
+        $file_name = time() . "_" . $file->getClientOriginalName();
+        $destination = 'fotoproduk';
+        $file->move($destination, $file_name);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
         $produk = Produk::find($id);
-
         if (is_null($produk)) {
             return response()->json('Data tidak ditemukan', 404);
         }
@@ -97,7 +117,7 @@ class ProdukController extends Controller
         $produk->harga = $request->harga;
         $produk->nama_produk = $request->nama_produk;
         $produk->desc_produk = $request->desc_produk;
-        $produk->foto_produk = $request->foto_produk;
+        $produk->foto_produk = $file_name;
         $produk->save();
         return response()->json($produk, 200);
     }

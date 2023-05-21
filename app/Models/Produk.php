@@ -15,7 +15,8 @@ class Produk extends Model
         'desc_produk',
         'foto_produk',
         'rating',
-        'ulasan'
+        'ulasan',
+        'file_cover'
     ];
 
     protected $hidden = [];

@@ -34,39 +34,25 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-
-        $input = [
-            'email' => $request->email,
-            'name' => $request->name,
-            'username' => $request->username,
-            'password' => Hash::make($request->password),
-            'role' => $request->role
-        ];
-        $user = User::create($input);
-
-
-        if ($user->role == "vendor" && !is_null($user)) {
-            // $vendor = Vendor::create([
-            //     'user_id' => $user->id,
-            //     'no_hp' => $request->no_hp,
-            //     'alamat' => $request->alamat,
-            //     'nama_vendor' => $request->nama_vendor,
-            //     'desc_vendor' => $request->desc_vendor,
-            //     'range_harga' => $request->range_harga,
-            //     'kontak_vendor' => $request->kontak_vendor,
-            //     'galeri_vendor' => $request->galeri_vendor,
-            //     'fotoprofile' => $request->fotoprofile
-            // ]);
+        $user = new User();
+        $user->email = $request->email;
+        $user->name = $request->name;
+        $user->username = $request->username;
+        $user->password = Hash::make($request->password);
+        $user->role = $request->role;
+        $user->save();
+        if ($user->role == "vendor" && !is_null($user->id)) {
             $vendor = VendorController::store($request, $user->id);
-            $user = array_merge(
-                $user->toArray(),
-                $vendor->toArray(),
-                //    ["token"=> $token]
-            );
+            if (!is_null($vendor)) {
+                $user = array_merge(
+                    $user->toArray(),
+                    $vendor->toArray(),
+                );
+            } else {
+                return response()->json("Data vendor tidak terbuat", 404);
+            }
         }
-        return response()->json([
-            "data" => $user
-        ], 200);
+        return response()->json($user, 200);
 
 
         // return response($response, 200);
@@ -178,7 +164,6 @@ class UserController extends Controller
             $vendor = VendorController::show($user->id);
 
             if (is_null($vendor)) {
-                $vendor = Vendor::store($request);
             } else {
                 VendorController::update($request, $user->id);
                 $vendor = VendorController::show($user->id);
